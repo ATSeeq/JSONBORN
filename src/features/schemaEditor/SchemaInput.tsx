@@ -1,7 +1,7 @@
 import { Alert, Autocomplete, Box, Button, CircularProgress, FormControl, TextField, Typography } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import FormIcon from '@mui/icons-material/EditDocument';
+import FormIcon from '@mui/icons-material/Edit';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { useNavigate } from 'react-router-dom';
 import {

@@ -1,17 +1,50 @@
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Autocomplete, TextField } from '@mui/material';
 import { useAppSelector } from '../../app/hooks';
 import { selectResolvedSchema } from './schemaSlice';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import Form from '@rjsf/core';
+import { withTheme } from '@rjsf/core';
+import { Theme as MuiTheme } from '@rjsf/mui';
 import validator from '@rjsf/validator-ajv8';
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import type { IChangeEvent } from '@rjsf/core';
 import debounce from 'lodash/debounce';
+import type { FieldProps } from '@rjsf/utils';
 
 type DebouncedFunction = {
     (data: any): void;
     cancel: () => void;
+};
+
+const Form = withTheme(MuiTheme);
+
+const UnitFieldTemplate = (props: FieldProps) => {
+    const [comment, setComment] = useState('');
+    const [description, setDescription] = useState('');
+    const [units, setUnits] = useState([]);
+
+    useEffect(() => {
+        setComment(props.schema.$comment);
+        if (props.schema.enum) {
+            setDescription(props.schema.description);
+            setUnits(props.schema.enum);
+        }
+    }, [props.schema]);
+
+    return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <Typography>{description || comment}</Typography>
+            {units.length > 0 ? (
+                <Autocomplete
+                    sx={{ width: '100%' }}
+                    options={units}
+                    renderInput={params => <TextField {...params} />}
+                />
+            ) : (
+                <></>
+            )}
+        </Box>
+    );
 };
 
 export function SchemaForm() {
@@ -49,6 +82,12 @@ export function SchemaForm() {
         [navigate]
     );
 
+    const uiSchema = {
+        unit: {
+            'ui:field': UnitFieldTemplate,
+        },
+    };
+
     if (!schema) {
         return (
             <Box sx={{ p: 2 }}>
@@ -76,10 +115,17 @@ export function SchemaForm() {
             <Box sx={{ width: '100%' }}>
                 <Form
                     schema={schema}
+                    uiSchema={uiSchema}
                     validator={validator}
                     formData={formData}
                     onChange={handleChange}
                     onSubmit={handleSubmit}
+                    templates={
+                        {
+                            // FieldTemplate: CustomFieldTemplate,
+                            // ObjectFieldTemplate: CustomObjectFieldTemplate,
+                        }
+                    }
                     liveValidate={false}
                     omitExtraData={true}
                     noHtml5Validate={true}
