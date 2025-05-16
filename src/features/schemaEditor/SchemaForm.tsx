@@ -5,14 +5,37 @@ import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Form from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
-import { useState } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import type { IChangeEvent } from '@rjsf/core';
+import debounce from 'lodash/debounce';
+
+type DebouncedFunction = {
+    (data: any): void;
+    cancel: () => void;
+};
 
 export function SchemaForm() {
-    const schema = useAppSelector(selectResolvedSchema);
+    const rawSchema = useAppSelector(selectResolvedSchema);
     const navigate = useNavigate();
     const [formData, setFormData] = useState<any>({});
 
+    // Memoize the schema to prevent unnecessary re-renders
+    const schema = useMemo(() => rawSchema, [rawSchema]);
+
+    // Create a ref to store the debounced function
+    const debouncedSetFormDataRef = useRef<DebouncedFunction | null>(null);
+
+    // Set up the debounced function in useEffect
+    useEffect(() => {
+        debouncedSetFormDataRef.current = debounce((data: any) => {
+            setFormData(data);
+        }, 100);
+
+        // Cleanup function to cancel any pending debounced calls
+        return () => {
+            debouncedSetFormDataRef.current?.cancel();
+        };
+    }, []);
 
     const handleChange = useCallback((data: IChangeEvent<any>) => {
         debouncedSetFormDataRef.current?.(data.formData);
@@ -31,21 +54,26 @@ export function SchemaForm() {
             <Box sx={{ p: 2 }}>
                 <Typography color="error">No schema available. Please parse a schema first.</Typography>
                 <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate('/')} sx={{ mt: 2 }}>
-                    Back to Schema Input
+                    Back
                 </Button>
             </Box>
         );
     }
 
     return (
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ p: 2, width: '80vw', maxWidth: '1400px', minWidth: '350px', mx: 'auto' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate('/')}>
-                    Back to Schema Input
+                <Button
+                    sx={{ width: '100px', flexShrink: 0, flexGrow: 0 }}
+                    variant="outlined"
+                    startIcon={<ArrowBackIcon />}
+                    onClick={() => navigate('/')}
+                >
+                    Back
                 </Button>
                 <Typography variant="h5">{schema.title || schema.$id || 'Untitled Schema'}</Typography>
             </Box>
-            <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
+            <Box sx={{ width: '100%' }}>
                 <Form
                     schema={schema}
                     validator={validator}

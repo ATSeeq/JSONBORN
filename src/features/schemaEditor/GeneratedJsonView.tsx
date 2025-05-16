@@ -9,14 +9,14 @@ export function GeneratedJsonView() {
     const json = location.state?.json || '';
 
     return (
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ p: 2, width: '80vw', maxWidth: '1400px', minWidth: '350px', mx: 'auto' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                 <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)}>
-                    Back to Form
+                    Back
                 </Button>
                 <Typography variant="h5">Generated JSON</Typography>
             </Box>
-            <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
+            <Box sx={{ width: '100%' }}>
                 <SchemaTextField
                     value={json}
                     slotProps={{

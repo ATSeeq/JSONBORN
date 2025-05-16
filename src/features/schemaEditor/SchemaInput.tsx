@@ -75,7 +75,18 @@ export function SchemaInput() {
     };
 
     return (
-        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2, minWidth: '700px', maxWidth: '1000px' }}>
+        <Box
+            sx={{
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                width: '80vw',
+                maxWidth: '1400px',
+                minWidth: '350px',
+                mx: 'auto',
+            }}
+        >
             <FormControl fullWidth>
                 <Autocomplete
                     id="schema-select"
