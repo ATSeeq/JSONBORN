@@ -1,0 +1,4 @@
+{
+    "$schema": "/components/mesh-quality/1.0.1/mesh-quality.schema.json",
+    "characteristics": ["Manifold", "ConsistentWinding", "NonDegenerate"]
+}
