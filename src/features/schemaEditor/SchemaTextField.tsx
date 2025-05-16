@@ -28,4 +28,4 @@ export function SchemaTextField({ customColor, ...props }: SchemaTextFieldProps)
             }}
         />
     );
-} 
+}

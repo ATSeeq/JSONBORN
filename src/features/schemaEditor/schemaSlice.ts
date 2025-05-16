@@ -115,7 +115,9 @@ export const loadAndResolveSchema = createAsyncThunk<
 
             while (hasRefs(resolvedSchema)) {
                 if (passCount >= MAX_PASSES) {
-                    return rejectWithValue('Schema contains unresolved $refs after maximum resolution attempts. The schema may have circular references or invalid references.');
+                    return rejectWithValue(
+                        'Schema contains unresolved $refs after maximum resolution attempts. The schema may have circular references or invalid references.'
+                    );
                 }
 
                 result = await resolver.resolve(resolvedSchema, {
@@ -123,12 +125,14 @@ export const loadAndResolveSchema = createAsyncThunk<
                         return new URI(opts.val.$ref);
                     },
                 });
-                
+
                 if (result.errors.length > 0) {
                     console.error('Resolution errors in subsequent pass:', result.errors);
-                    return rejectWithValue(result.errors[0]?.message || 'Failed to resolve schema references in subsequent pass.');
+                    return rejectWithValue(
+                        result.errors[0]?.message || 'Failed to resolve schema references in subsequent pass.'
+                    );
                 }
-                
+
                 resolvedSchema = result.result;
                 passCount++;
             }
