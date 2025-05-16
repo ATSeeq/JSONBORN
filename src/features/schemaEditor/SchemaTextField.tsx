@@ -1,11 +1,12 @@
 import { TextField } from '@mui/material';
-import type { TextFieldProps } from '@mui/material';
+import type { TextFieldProps, SxProps, Theme } from '@mui/material';
 
 interface SchemaTextFieldProps extends Omit<TextFieldProps, 'sx'> {
     customColor?: string;
+    sx?: SxProps<Theme>;
 }
 
-export function SchemaTextField({ customColor, ...props }: SchemaTextFieldProps) {
+export function SchemaTextField({ customColor, sx, ...props }: SchemaTextFieldProps) {
     return (
         <TextField
             {...props}
@@ -25,6 +26,7 @@ export function SchemaTextField({ customColor, ...props }: SchemaTextFieldProps)
                     overflowX: 'auto',
                     scrollbarWidth: 'thin',
                 },
+                ...sx,
             }}
         />
     );
