@@ -14,6 +14,7 @@ import {
     setOriginalSchemaInput,
 } from './schemaSlice';
 import { useEffect, useState } from 'react';
+import { SchemaTextField } from './SchemaTextField';
 
 export function SchemaInput() {
     const dispatch = useAppDispatch();
@@ -107,26 +108,10 @@ export function SchemaInput() {
                 />
             </FormControl>
 
-            <TextField
+            <SchemaTextField
                 label="JSON Schema Input (or edit loaded file)"
-                multiline
-                rows={15}
                 value={rawInput}
                 onChange={handleManualInputChange}
-                variant="outlined"
-                fullWidth
-                placeholder="Paste your JSON Schema here or select a file above..."
-                sx={{
-                    '& .MuiInputBase-root': {
-                        fontFamily: 'monospace',
-                        fontSize: '12px',
-                    },
-                    '& .MuiInputBase-input': {
-                        whiteSpace: 'nowrap',
-                        overflowX: 'auto',
-                        scrollbarWidth: 'thin',
-                    },
-                }}
             />
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Button
@@ -152,27 +137,11 @@ export function SchemaInput() {
             )}
 
             {resolvedSchema && !error && (
-                <TextField
+                <SchemaTextField
                     label={`Successfully parsed schema`}
-                    multiline
-                    rows={15}
                     value={JSON.stringify(resolvedSchema, null, 2)}
                     onChange={handleManualInputChange}
-                    variant="outlined"
-                    fullWidth
-                    placeholder="Paste your JSON Schema here or select a file above..."
-                    sx={{
-                        '& .MuiInputBase-root': {
-                            fontFamily: 'monospace',
-                            fontSize: '12px',
-                            color: 'success.main',
-                        },
-                        '& .MuiInputBase-input': {
-                            whiteSpace: 'nowrap',
-                            overflowX: 'auto',
-                            scrollbarWidth: 'thin',
-                        },
-                    }}
+                    customColor="success.main"
                 />
             )}
         </Box>
