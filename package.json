@@ -19,10 +19,12 @@
         "@rjsf/utils": "^6.0.0-beta.7",
         "@rjsf/validator-ajv8": "^6.0.0-beta.7",
         "@stoplight/json-ref-resolver": "^3.1.6",
+        "@types/react-router-dom": "^5.3.3",
         "prettier": "^3.5.3",
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
         "react-redux": "^9.2.0",
+        "react-router-dom": "^7.6.0",
         "urijs": "^1.19.11"
     },
     "devDependencies": {

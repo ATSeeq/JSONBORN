@@ -1,7 +1,9 @@
 import { Alert, Autocomplete, Box, Button, CircularProgress, FormControl, TextField, Typography } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import FormIcon from '@mui/icons-material/EditDocument';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useNavigate } from 'react-router-dom';
 import {
     loadAndResolveSchema,
     selectAvailableSchemaIds,
@@ -18,6 +20,7 @@ import { SchemaTextField } from './SchemaTextField';
 
 export function SchemaInput() {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const rawInput = useAppSelector(selectOriginalSchemaInput);
     const currentId = useAppSelector(selectCurrentSchemaId);
     const isLoading = useAppSelector(selectIsLoading);
@@ -98,9 +101,14 @@ export function SchemaInput() {
                             }}
                         />
                     )}
-                    renderOption={(props, option) => (
-                        <li {...props}>{option === '' ? <em>None (or paste below)</em> : option}</li>
-                    )}
+                    renderOption={(props, option) => {
+                        const { key, ...otherProps } = props;
+                        return (
+                            <li key={key} {...otherProps}>
+                                {option === '' ? <em>None (or paste below)</em> : option}
+                            </li>
+                        );
+                    }}
                     freeSolo
                     selectOnFocus
                     clearOnBlur
@@ -137,12 +145,23 @@ export function SchemaInput() {
             )}
 
             {resolvedSchema && !error && (
-                <SchemaTextField
-                    label={`Successfully parsed schema`}
-                    value={JSON.stringify(resolvedSchema, null, 2)}
-                    onChange={handleManualInputChange}
-                    customColor="success.main"
-                />
+                <>
+                    <SchemaTextField
+                        label={`Successfully parsed schema`}
+                        value={JSON.stringify(resolvedSchema, null, 2)}
+                        onChange={handleManualInputChange}
+                        customColor="success.main"
+                    />
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<FormIcon />}
+                        onClick={() => navigate('/form')}
+                        sx={{ alignSelf: 'flex-start' }}
+                    >
+                        Generate Form
+                    </Button>
+                </>
             )}
         </Box>
     );
