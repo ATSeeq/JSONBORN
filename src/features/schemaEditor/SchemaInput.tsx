@@ -71,11 +71,7 @@ export function SchemaInput() {
     };
 
     return (
-        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2, minWidth: '600px', maxWidth: '1000px' }}>
-            <Typography variant="h5" component="h2" gutterBottom>
-                Load JSON Schema
-            </Typography>
-
+        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2, minWidth: '700px', maxWidth: '1000px' }}>
             <FormControl fullWidth>
                 <Autocomplete
                     id="schema-select"
