@@ -53,6 +53,10 @@ for (const filePath in rawFileImporters) {
 // Sort for consistent display in UI
 availableSchemaIds.sort();
 
+const hasRefs = (schema: JsonSchema): boolean => {
+    return JSON.stringify(schema).includes('"$ref"');
+};
+
 export const loadAndResolveSchema = createAsyncThunk<
     JsonSchema,
     { schemaSource: string | JsonSchema; sourceId: string | undefined },
@@ -77,11 +81,9 @@ export const loadAndResolveSchema = createAsyncThunk<
                     resolve: async ref => {
                         const refStr = ref.toString();
                         const importer = idToImporterMap.get(refStr);
-                        // console.log('Importer:', importer);
                         if (importer) {
                             try {
                                 const module = await importer();
-                                // console.log('Resolved module:', module);
                                 return (module as any).default || module;
                             } catch (e) {
                                 console.error(`Error importing ${refStr}:`, e);
@@ -95,7 +97,7 @@ export const loadAndResolveSchema = createAsyncThunk<
         });
 
         try {
-            const result = await resolver.resolve(schemaObject, {
+            let result = await resolver.resolve(schemaObject, {
                 transformRef(opts) {
                     return new URI(opts.val.$ref);
                 },
@@ -106,7 +108,32 @@ export const loadAndResolveSchema = createAsyncThunk<
                 return rejectWithValue(result.errors[0]?.message || 'Failed to resolve schema references.');
             }
 
-            return result.result;
+            // Keep resolving until no more $refs are found
+            let resolvedSchema = result.result;
+            let passCount = 1;
+            const MAX_PASSES = 4;
+
+            while (hasRefs(resolvedSchema)) {
+                if (passCount >= MAX_PASSES) {
+                    return rejectWithValue('Schema contains unresolved $refs after maximum resolution attempts. The schema may have circular references or invalid references.');
+                }
+
+                result = await resolver.resolve(resolvedSchema, {
+                    transformRef(opts) {
+                        return new URI(opts.val.$ref);
+                    },
+                });
+                
+                if (result.errors.length > 0) {
+                    console.error('Resolution errors in subsequent pass:', result.errors);
+                    return rejectWithValue(result.errors[0]?.message || 'Failed to resolve schema references in subsequent pass.');
+                }
+                
+                resolvedSchema = result.result;
+                passCount++;
+            }
+
+            return resolvedSchema;
         } catch (resolveError: any) {
             console.error('Resolution error:', resolveError);
             // If resolution fails, return the original schema as a fallback
